@@ -6,6 +6,39 @@
 #include<math.h>
 #define pi 3.142857
 
+class Paint{
+	public:
+		static void circle(float x, float y, float radius){
+			float i;
+			for (i = 0; i < (2 * pi); i += 0.001)
+			{
+				// let 200 is radius of circle and as,
+				// circle is defined as x=r*cos(i) and y=r*sin(i)
+				glVertex2i(x + radius*cos(i),
+									 y + radius*sin(i));
+			}
+
+	}
+};
+
+class Blobs{
+	public:
+		const float R = 25;
+		float x_center;
+		float y_center;
+
+		Blobs(){
+			x_center = 0;
+			y_center = 0;
+		}
+
+		void render(){
+			Paint::circle(x_center, y_center, R);
+		}
+};
+
+
+
 // function to initialize
 void myInit (void)
 {
@@ -25,12 +58,15 @@ void myInit (void)
 	gluOrtho2D(-780, 780, -420, 420);
 }
 
+Blobs b;
+
 void display (void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBegin(GL_POINTS);
 
 	/* TODO: render blobs */
+	b.render();
 
 	glEnd();
 	glFlush();
