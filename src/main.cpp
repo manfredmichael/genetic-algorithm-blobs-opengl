@@ -29,20 +29,9 @@ void display (void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBegin(GL_POINTS);
-	float x, y, i;
-	
-	// iterate y up to 2*pi, i.e., 360 degree
-	// with small increment in angle as
-	// glVertex2i just draws a point on specified co-ordinate
-	for ( i = 0; i < (2 * pi); i += 0.001)
-	{
-		// let 200 is radius of circle and as,
-		// circle is defined as x=r*cos(i) and y=r*sin(i)
-		x = 200 * cos(i);
-		y = 200 * sin(i);
-		
-		glVertex2i(x, y);
-	}
+
+	/* TODO: render blobs */
+
 	glEnd();
 	glFlush();
 }
@@ -60,6 +49,7 @@ int main (int argc, char** argv)
 	glutCreateWindow("Circle Drawing");
 	myInit();
 	
+	glutIdleFunc(display);
 	glutDisplayFunc(display);
 	glutMainLoop();
 }
