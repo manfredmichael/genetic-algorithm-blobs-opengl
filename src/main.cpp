@@ -9,16 +9,31 @@
 
 class Paint{
 	public:
-		static void circle(float x, float y, float radius){
-			for (float i = 0; i < (2 * pi); i += 0.001)
-			{
-				// let 200 is radius of circle and as,
-				// circle is defined as x=r*cos(i) and y=r*sin(i)
-				glVertex2i(x + radius*cos(i),
-									 y + radius*sin(i));
-			}
+		static void circle(GLfloat x, GLfloat y, GLfloat radius){
+			int i;
+			int triangleAmount = 20; //# of triangles used to draw circle
 			
-	}
+			//GLfloat radius = 0.8f; //radius
+			GLfloat twicePi = 2.0f * pi;
+			
+			glBegin(GL_TRIANGLE_FAN);
+				glVertex2f(x, y); // center of circle
+				for(i = 0; i <= triangleAmount;i++) { 
+					glVertex2f(
+										x + (radius * cos(i *  twicePi / triangleAmount)), 
+							y + (radius * sin(i * twicePi / triangleAmount))
+					);
+				}
+			glEnd();
+		}
+
+		static void point(float x, float y, float radius){
+			glBegin(GL_POINTS);
+					glColor3f(0.3, 0.3, 0.3);
+					glPointSize(radius);
+					glVertex2i(x, y);
+			glEnd();    
+		}
 };
 
 class Blobs{
@@ -30,8 +45,8 @@ class Blobs{
 		float y;
 
 		Blobs(){
-			x = 0;
-			y = 0;
+			x = 200;
+			y = 200;
 		}
 
 		void render(){
@@ -70,7 +85,6 @@ Blobs b;
 void display (void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	glBegin(GL_POINTS);
 
 	/* TODO: */ 
 	/* * render blobs */
