@@ -48,8 +48,7 @@ class Blobs{
 		int step=0;
 
 		Blobs(){
-			x = 200;
-			y = 200;
+			reset();
 			for(int i = 0; i < STEPS; i++) { 
 				/* x, y coordinate movement */	
 				movement_sequence[i][0] = (rand() % (SPEED+1)) - SPEED/2;
@@ -66,6 +65,12 @@ class Blobs{
 			y += movement_sequence[step][1];
 			step += 1;
 		}
+
+		void reset(){
+			x = -400;
+			y = 0;
+			step = 0;
+	}
 };
 
 
