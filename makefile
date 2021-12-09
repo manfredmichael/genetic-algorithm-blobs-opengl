@@ -11,4 +11,4 @@ LIBS = -lglut -lglfw -lGLEW -framework OpenGL
 endif
 
 %: %.cpp
-	$(CC) $@.cpp $(LIBS) -o $@.o
+	$(CC) $@.cpp $(LIBS) -o main.o
