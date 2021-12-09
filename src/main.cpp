@@ -7,6 +7,11 @@
 #include<math.h>
 #define pi 3.142857
 
+/* Project Configurations */
+const int N_BLOB = 100;
+/* Project Configurations */
+
+
 class Paint{
 	public:
 		static void circle(GLfloat x, GLfloat y, GLfloat radius){
@@ -75,9 +80,15 @@ class Blobs{
 
 
 
+Blobs blobs [N_BLOB];
 // function to initialize
 void myInit (void)
 {
+	for(int i = 0; i < N_BLOB; i++) { 
+		/* x, y coordinate movement */	
+		blobs[i] = Blobs();
+	}
+
 	// making background color black as first
 	// 3 arguments all are 0.0
 	glClearColor(1, 1, 1, 1.0);
@@ -92,9 +103,10 @@ void myInit (void)
 	
 	// setting window dimension in X- and Y- direction
 	gluOrtho2D(-780, 780, -420, 420);
+
+
 }
 
-Blobs b;
 
 void display (void)
 {
@@ -103,8 +115,11 @@ void display (void)
 	/* TODO: */ 
 	/* * render blobs */
 	/* * move blobs with fixed movement sequence */
-	b.render();
-	b.move();
+	for(int i = 0; i < N_BLOB; i++) { 
+		/* x, y coordinate movement */	
+		blobs[i].render();
+		blobs[i].move();
+	}
 
 	glEnd();
 	glFlush();
