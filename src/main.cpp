@@ -44,7 +44,7 @@ class Paint{
 class Blobs{
 	public:
 		static constexpr float RADIUS = 8;
-		static constexpr int SPEED = 8;
+		static constexpr int SPEED = 4;
 		static constexpr int STEPS = 3000;
 
 		float x;
@@ -62,6 +62,7 @@ class Blobs{
 		}
 
 		void render(){
+			glColor3f(151.0/255, 191.0/255, 180.0/255);
 			Paint::circle(x, y, RADIUS);
 		}
 
@@ -93,8 +94,6 @@ void myInit (void)
 	// 3 arguments all are 0.0
 	glClearColor(1, 1, 1, 1.0);
 	
-	// making picture color green (in RGB mode), as middle argument is 1.0
-	glColor3f(0.0, 1.0, 0.0);
 	
 	// breadth of picture boundary is 1 pixel
 	glPointSize(1.0);
