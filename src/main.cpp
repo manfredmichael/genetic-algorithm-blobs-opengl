@@ -3,38 +3,45 @@
 // OpenGL
 #include<stdio.h>
 #include<GL/glut.h>
+#include<stdlib.h> 
 #include<math.h>
 #define pi 3.142857
 
 class Paint{
 	public:
 		static void circle(float x, float y, float radius){
-			float i;
-			for (i = 0; i < (2 * pi); i += 0.001)
+			for (float i = 0; i < (2 * pi); i += 0.001)
 			{
 				// let 200 is radius of circle and as,
 				// circle is defined as x=r*cos(i) and y=r*sin(i)
 				glVertex2i(x + radius*cos(i),
 									 y + radius*sin(i));
 			}
-
+			
 	}
 };
 
 class Blobs{
 	public:
-		const float R = 25;
-		float x_center;
-		float y_center;
+		static constexpr float RADIUS=8;
+		static constexpr int SPEED=4;
+
+		float x;
+		float y;
 
 		Blobs(){
-			x_center = 0;
-			y_center = 0;
+			x = 0;
+			y = 0;
 		}
 
 		void render(){
-			Paint::circle(x_center, y_center, R);
+			Paint::circle(x, y, RADIUS);
 		}
+
+		void move(){
+			x += (rand() % (SPEED+1)) - SPEED/2;
+			y += (rand() % (SPEED+1)) - SPEED/2;
+	}
 };
 
 
@@ -65,8 +72,11 @@ void display (void)
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBegin(GL_POINTS);
 
-	/* TODO: render blobs */
+	/* TODO: */ 
+	/* * render blobs */
+	/* * move blobs with fixed movement sequence */
 	b.render();
+	b.move();
 
 	glEnd();
 	glFlush();
