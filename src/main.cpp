@@ -38,15 +38,23 @@ class Paint{
 
 class Blobs{
 	public:
-		static constexpr float RADIUS=8;
-		static constexpr int SPEED=4;
+		static constexpr float RADIUS = 8;
+		static constexpr int SPEED = 8;
+		static constexpr int STEPS = 3000;
 
 		float x;
 		float y;
+		float movement_sequence[STEPS][2];
+		int step=0;
 
 		Blobs(){
 			x = 200;
 			y = 200;
+			for(int i = 0; i < STEPS; i++) { 
+				/* x, y coordinate movement */	
+				movement_sequence[i][0] = (rand() % (SPEED+1)) - SPEED/2;
+				movement_sequence[i][1] = (rand() % (SPEED+1)) - SPEED/2;
+			}
 		}
 
 		void render(){
@@ -54,9 +62,10 @@ class Blobs{
 		}
 
 		void move(){
-			x += (rand() % (SPEED+1)) - SPEED/2;
-			y += (rand() % (SPEED+1)) - SPEED/2;
-	}
+			x += movement_sequence[step][0];
+			y += movement_sequence[step][1];
+			step += 1;
+		}
 };
 
 
