@@ -49,8 +49,8 @@ class Blobs{
 
 		float x;
 		float y;
-		float movement_sequence[STEPS][2];
-		int step=0;
+		float movement_sequence[STEPS][2];    // movement sequence for each step
+		int step=0;    // step counter 
 
 		Blobs(){
 			reset();
@@ -62,17 +62,20 @@ class Blobs{
 		}
 
 		void render(){
+			/* draw filled circle */
 			glColor3f(151.0/255, 191.0/255, 180.0/255);
 			Paint::circle(x, y, RADIUS);
 		}
 
 		void move(){
+			/* change blob position with movement sequence on each step */
 			x += movement_sequence[step][0];
 			y += movement_sequence[step][1];
 			step += 1;
 		}
 
 		void reset(){
+			/* reset blob positiona and step counter */
 			x = -400;
 			y = 0;
 			step = 0;
@@ -82,14 +85,12 @@ class Blobs{
 class Simulation{
 	public:
 		Blobs blobs [N_BLOB];
-		static constexpr int STEPS = 3000;
-
-		int steps;
+		int steps;    // step counter
 
 		Simulation(){
 			reset();
+			/* initialize all blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
-				/* x, y coordinate movement */	
 				blobs[i] = Blobs();
 			}
 		}
@@ -97,12 +98,13 @@ class Simulation{
 		void simulate(){
 			if (steps < Blobs::STEPS){
 				take_next_step();
-			} else {
+			} else {    // reset simulation when maximum step was taken 
 				reset();
 			}
 		}
 
 		void take_next_step(){
+			/* move and show blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].render();
 				blobs[i].move();
@@ -111,6 +113,7 @@ class Simulation{
 		}
 
 		void reset(){
+			/* reset all blobs and step counter */
 			steps = 0;
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].reset();
