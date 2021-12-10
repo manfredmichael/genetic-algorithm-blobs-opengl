@@ -79,16 +79,30 @@ class Blobs{
 	}
 };
 
+class Simulation{
+	public:
+		Blobs blobs [N_BLOB];
 
+		Simulation(){
+			for(int i = 0; i < N_BLOB; i++) { 
+				/* x, y coordinate movement */	
+				blobs[i] = Blobs();
+			}
+		}
 
-Blobs blobs [N_BLOB];
+		void simulate(){
+			for(int i = 0; i < N_BLOB; i++) { 
+				blobs[i].render();
+				blobs[i].move();
+			}
+		}
+};
+
+Simulation simulation = Simulation();
+
 // function to initialize
 void myInit (void)
 {
-	for(int i = 0; i < N_BLOB; i++) { 
-		/* x, y coordinate movement */	
-		blobs[i] = Blobs();
-	}
 
 	// making background color black as first
 	// 3 arguments all are 0.0
@@ -112,13 +126,8 @@ void display (void)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	/* TODO: */ 
-	/* * render blobs */
-	/* * move blobs with fixed movement sequence */
-	for(int i = 0; i < N_BLOB; i++) { 
-		/* x, y coordinate movement */	
-		blobs[i].render();
-		blobs[i].move();
-	}
+
+	simulation.simulate();
 
 	glEnd();
 	glFlush();
