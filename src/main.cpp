@@ -25,19 +25,31 @@ class Paint{
 				glVertex2f(x, y); // center of circle
 				for(i = 0; i <= triangleAmount;i++) { 
 					glVertex2f(
-										x + (radius * cos(i *  twicePi / triangleAmount)), 
+							x + (radius * cos(i *  twicePi / triangleAmount)), 
 							y + (radius * sin(i * twicePi / triangleAmount))
 					);
 				}
 			glEnd();
 		}
 
-		static void point(float x, float y, float radius){
+		static void point(float x, float y, float radius) {
 			glBegin(GL_POINTS);
 					glColor3f(0.3, 0.3, 0.3);
 					glPointSize(radius);
 					glVertex2i(x, y);
 			glEnd();    
+		}
+
+		static void rect(float x, float y, float w, float h) {
+			glBegin(GL_TRIANGLE_FAN);
+				glVertex2f(x, y); 
+				glVertex2f(x+w/2, y+h/2); 
+				glVertex2f(x-w/2, y+h/2); 
+				glVertex2f(x-w/2, y-h/2); 
+				glVertex2f(x+w/2, y-h/2); 
+				glVertex2f(x+w/2, y+h/2); 
+			glEnd();
+
 		}
 };
 
@@ -82,6 +94,26 @@ class Blobs{
 	}
 };
 
+class Obstacle{
+	public:
+		float x;
+		float y;
+		float w;
+		float h;
+
+		Obstacle(float x_, float y_, float w_, float h_) {
+			x = x_;
+			y = y_;
+			w = w_;
+			h = h_;
+		}
+
+		void render(){
+			Paint::rect(x, y, w, h);
+		}
+};
+
+
 class Simulation{
 	public:
 		Blobs blobs [N_BLOB];
@@ -122,6 +154,7 @@ class Simulation{
 };
 
 Simulation simulation = Simulation();
+Obstacle obstacle = Obstacle(0, 0, 100, 100);
 
 // function to initialize
 void myInit (void)
@@ -133,14 +166,12 @@ void myInit (void)
 	
 	
 	// breadth of picture boundary is 1 pixel
-	glPointSize(1.0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	/* glMatrixMode(GL_PROJECTION); */
+	/* glLoadIdentity(); */
 	
 	// setting window dimension in X- and Y- direction
 	gluOrtho2D(-780, 780, -420, 420);
-
-
+	glutSwapBuffers();
 }
 
 
@@ -155,6 +186,7 @@ void display (void)
 
 
 	simulation.simulate();
+	obstacle.render();
 
 	glEnd();
 	glFlush();
