@@ -149,6 +149,10 @@ void display (void)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	/* TODO: */ 
+	/* * add walls */
+	/* * add collisions */
+	/* * add blob death on collision */
+
 
 	simulation.simulate();
 
