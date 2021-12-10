@@ -82,8 +82,12 @@ class Blobs{
 class Simulation{
 	public:
 		Blobs blobs [N_BLOB];
+		static constexpr int STEPS = 3000;
+
+		int steps;
 
 		Simulation(){
+			reset();
 			for(int i = 0; i < N_BLOB; i++) { 
 				/* x, y coordinate movement */	
 				blobs[i] = Blobs();
@@ -91,9 +95,25 @@ class Simulation{
 		}
 
 		void simulate(){
+			if (steps < Blobs::STEPS){
+				take_next_step();
+			} else {
+				reset();
+			}
+		}
+
+		void take_next_step(){
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].render();
 				blobs[i].move();
+			}
+			steps += 1;
+		}
+
+		void reset(){
+			steps = 0;
+			for(int i = 0; i < N_BLOB; i++) { 
+				blobs[i].reset();
 			}
 		}
 };
