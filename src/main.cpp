@@ -5,6 +5,7 @@
 #include<GL/glut.h>
 #include<stdlib.h> 
 #include<math.h>
+#include<vector>
 #define pi 3.142857
 
 /* Project Configurations */
@@ -118,35 +119,39 @@ class Obstacle{
 
 class ObstacleFactory{
 	public:
-		static constexpr int MAX_X = 500;
+		static constexpr int MAX_X = 600;
 		static constexpr int MAX_Y = 500;
-		static constexpr int MIN_X = -500;
-		static constexpr int MIN_Y = -500;
+		static constexpr int MIN_X = -800;
+		static constexpr int MIN_Y = -800;
 
-		static constexpr int MAX_W = 300;
-		static constexpr int MAX_H = 300;
+		static constexpr int MAX_W = 200;
+		static constexpr int MAX_H = 200;
 		static constexpr int MIN_W = 20;
 		static constexpr int MIN_H = 20;
-
-		Obstacle* obstacle= (Obstacle*)malloc(sizeof(Obstacle) * N_OBSTACLE);
+		
+		std::vector <Obstacle> obstacles;
 
 		ObstacleFactory() {
 			regenerate();
 		}
 
 		void regenerate(){
-			for(int i = 0; i < N_BLOB; i++) { 
-				float x = (rand() % (MAX_X+MIN_X+1)) - MIN_X;
-				float y = (rand() % (MAX_Y+MIN_Y+1)) - MIN_Y;
-				float w = (rand() % (MAX_W+MIN_W+1)) - MIN_W;
-				float h = (rand() % (MAX_H+MIN_H+1)) - MIN_H;
-				obstacle[i] = Obstacle(x, y, w, h);
+			for(int i = 0; i < N_OBSTACLE; i++) { 
+				float x = (rand() % (MAX_X-MIN_X) + MIN_X);
+				float y = (rand() % (MAX_Y-MIN_Y) + MIN_Y);
+				float w = (rand() % (MAX_W) + MIN_W);
+				float h = (rand() % (MAX_H) + MIN_H);
+				/* float x = (rand() % (MAX_X+MIN_X+1)) - MIN_X; */
+				/* float y = (rand() % (MAX_Y+MIN_Y+1)) - MIN_Y; */
+				/* float w = (rand() % (MAX_W+MIN_W+1)) - MIN_W; */
+				/* float h = (rand() % (MAX_H+MIN_H+1)) - MIN_H; */
+				obstacles.push_back(Obstacle(x, y, w, h));
 			}
 		}
 
 		void render(){
 			for(int i = 0; i < N_BLOB; i++) { 
-				obstacle[i].render();
+				obstacles[i].render();
 			}
 		}
 
@@ -156,11 +161,12 @@ class ObstacleFactory{
 class Simulation{
 	public:
 		Blobs blobs [N_BLOB];
-		Obstacle obstacle = Obstacle(-250, 0, 50, 200);
+		ObstacleFactory obstacleFactory;
 		int steps;    // step counter
 
 		Simulation(){
 			reset();
+			obstacleFactory = ObstacleFactory();
 			/* initialize all blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i] = Blobs();
@@ -177,7 +183,7 @@ class Simulation{
 
 		void take_next_step(){
 			/* show obstacles */
-			obstacle.render();
+			obstacleFactory.render();
 			/* move and show blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].render();
