@@ -176,10 +176,6 @@ class Collision{
 	std::vector <Obstacle> obstacles;
 
 	public:
-		Collision(std::vector <Obstacle> new_obstacles){
-			add_obstacles(new_obstacles);
-		}
-
 		void add_obstacles(std::vector <Obstacle> new_obstacles){
 			for(int i = 0; i < (int) new_obstacles.size(); i++) { 
 				obstacles.push_back(new_obstacles[i]);
@@ -204,8 +200,8 @@ class Collision{
 					 blobs.y > y_obs - h_obs_half && \
 					 blobs.y < y_obs + h_obs_half ) 
 					 return true;
-				return false;
 			}
+			return false;
 		}
 };
 
@@ -215,9 +211,15 @@ class Simulation{
 		ObstacleFactory obstacleFactory;
 		int steps;    // step counter
 
+		Collision collision = Collision();
+
 		Simulation(){
 			reset();
 			obstacleFactory = ObstacleFactory();
+
+			/* add all obstacles to collision manager */
+			collision.add_obstacles(obstacleFactory.obstacles);
+
 			/* initialize all blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i] = Blobs();
@@ -239,6 +241,7 @@ class Simulation{
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].render();
 				blobs[i].move();
+				collision.collide(blobs[i]); // BUG: blob not ded when colliding
 			}
 			steps += 1;
 		}
