@@ -99,7 +99,11 @@ class Blobs{
 			y = 0;
 			step = 0;
 			is_dead=false;
-	}
+		}
+
+		void kill(){
+			is_dead=true;
+		}
 };
 
 class Obstacle{
