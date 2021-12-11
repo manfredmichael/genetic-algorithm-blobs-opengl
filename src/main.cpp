@@ -9,6 +9,7 @@
 
 /* Project Configurations */
 const int N_BLOB = 100;
+const int N_OBSTACLE = 4;
 /* Project Configurations */
 
 
@@ -112,6 +113,43 @@ class Obstacle{
 			glColor3f(221/255.0, 74/255.0, 72/255.0);
 			Paint::rect(x, y, w, h);
 		}
+};
+
+
+class ObstacleFactory{
+	public:
+		static constexpr int MAX_X = 500;
+		static constexpr int MAX_Y = 500;
+		static constexpr int MIN_X = -500;
+		static constexpr int MIN_Y = -500;
+
+		static constexpr int MAX_W = 300;
+		static constexpr int MAX_H = 300;
+		static constexpr int MIN_W = 20;
+		static constexpr int MIN_H = 20;
+
+		Obstacle* obstacle= (Obstacle*)malloc(sizeof(Obstacle) * N_OBSTACLE);
+
+		ObstacleFactory() {
+			regenerate();
+		}
+
+		void regenerate(){
+			for(int i = 0; i < N_BLOB; i++) { 
+				float x = (rand() % (MAX_X+MIN_X+1)) - MIN_X;
+				float y = (rand() % (MAX_Y+MIN_Y+1)) - MIN_Y;
+				float w = (rand() % (MAX_W+MIN_W+1)) - MIN_W;
+				float h = (rand() % (MAX_H+MIN_H+1)) - MIN_H;
+				obstacle[i] = Obstacle(x, y, w, h);
+			}
+		}
+
+		void render(){
+			for(int i = 0; i < N_BLOB; i++) { 
+				obstacle[i].render();
+			}
+		}
+
 };
 
 
