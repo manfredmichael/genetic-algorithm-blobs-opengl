@@ -67,6 +67,7 @@ class Blobs{
 		float y;
 		float movement_sequence[STEPS][2];    // movement sequence for each step
 		int step=0;    // step counter 
+		bool is_dead=false;
 
 		Blobs(){
 			reset();
@@ -85,17 +86,25 @@ class Blobs{
 
 		void move(){
 			/* change blob position with movement sequence on each step */
-			x += movement_sequence[step][0];
-			y += movement_sequence[step][1];
+			if (!is_dead){
+				x += movement_sequence[step][0];
+				y += movement_sequence[step][1];
+			}
 			step += 1;
 		}
 
 		void reset(){
-			/* reset blob positiona and step counter */
+			/* reset blob position and step counter */
 			x = -400;
 			y = 0;
 			step = 0;
-	}
+			is_dead=false;
+		}
+
+		void kill(){
+			/* scary method */
+			is_dead=true;
+		}
 };
 
 class Obstacle{
@@ -161,9 +170,40 @@ class ObstacleFactory{
 				obstacles[i].render();
 			}
 		}
-
 };
 
+class Collision{
+	std::vector <Obstacle> obstacles;
+
+	public:
+		void add_obstacles(std::vector <Obstacle> new_obstacles){
+			for(int i = 0; i < (int) new_obstacles.size(); i++) { 
+				obstacles.push_back(new_obstacles[i]);
+			}
+		}
+
+		/* check collision between blob & all obstacles */
+		void collide(Blobs* blobs){
+			if (is_colliding(*blobs))
+				blobs->kill();
+		}
+
+		bool is_colliding(Blobs blobs) {
+			for(int i = 0; i < (int) obstacles.size(); i++) { 
+				float x_obs = obstacles[i].x;
+				float y_obs = obstacles[i].y;
+				float w_obs_half = obstacles[i].w/2;
+				float h_obs_half = obstacles[i].h/2;
+
+				if(blobs.x > x_obs - w_obs_half && \
+					 blobs.x < x_obs + w_obs_half && \
+					 blobs.y > y_obs - h_obs_half && \
+					 blobs.y < y_obs + h_obs_half ) 
+					 return true;
+			}
+			return false;
+		}
+};
 
 class Simulation{
 	public:
@@ -171,9 +211,15 @@ class Simulation{
 		ObstacleFactory obstacleFactory;
 		int steps;    // step counter
 
+		Collision collision = Collision();
+
 		Simulation(){
 			reset();
 			obstacleFactory = ObstacleFactory();
+
+			/* add all obstacles to collision manager */
+			collision.add_obstacles(obstacleFactory.obstacles);
+
 			/* initialize all blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i] = Blobs();
@@ -195,6 +241,7 @@ class Simulation{
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].render();
 				blobs[i].move();
+				collision.collide(&blobs[i]);
 			}
 			steps += 1;
 		}
