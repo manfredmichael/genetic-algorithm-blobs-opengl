@@ -5,10 +5,14 @@
 #include<GL/glut.h>
 #include<stdlib.h> 
 #include<math.h>
+#include<vector>
+#include<random>
+#include<time.h>
 #define pi 3.142857
 
 /* Project Configurations */
 const int N_BLOB = 100;
+const int N_OBSTACLE = 25;
 /* Project Configurations */
 
 
@@ -115,14 +119,61 @@ class Obstacle{
 };
 
 
+class ObstacleFactory{
+	public:
+		static constexpr int MAX_X = 700;
+		static constexpr int MAX_Y = 400;
+		static constexpr int MIN_X = -300;
+		static constexpr int MIN_Y = -400;
+
+		static constexpr int MAX_W = 100;
+		static constexpr int MAX_H = 100;
+		static constexpr int MIN_W = 20;
+		static constexpr int MIN_H = 20;
+		
+		std::vector <Obstacle> obstacles;
+
+		ObstacleFactory() {
+			regenerate();
+		}
+
+		void regenerate(){
+			/* set random seed */
+			unsigned int time_ui = static_cast<unsigned int>( time(NULL) ); 
+			srand( time_ui );
+
+			/* generate N_OBSTACLE new obstacles */
+			for(int i = 0; i < N_OBSTACLE; i++) { 
+				generate();
+			}
+		}
+
+		void generate(){
+				float x = MIN_X + (rand() % (int)(MAX_X - MIN_X));
+				float y = MIN_Y + (rand() % (int)(MAX_Y - MIN_Y));
+				float w = MIN_W + (rand() % (int)(MAX_W - MIN_W));
+				float h = MIN_H + (rand() % (int)(MAX_H - MIN_H));
+				obstacles.push_back(Obstacle(x, y, w, h));
+		}
+
+		void render(){
+			for(int i = 0; i < N_BLOB; i++) { 
+				obstacles[i].render();
+			}
+		}
+
+};
+
+
 class Simulation{
 	public:
 		Blobs blobs [N_BLOB];
-		Obstacle obstacle = Obstacle(-250, 0, 50, 200);
+		ObstacleFactory obstacleFactory;
 		int steps;    // step counter
 
 		Simulation(){
 			reset();
+			obstacleFactory = ObstacleFactory();
 			/* initialize all blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i] = Blobs();
@@ -139,7 +190,7 @@ class Simulation{
 
 		void take_next_step(){
 			/* show obstacles */
-			obstacle.render();
+			obstacleFactory.render();
 			/* move and show blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].render();
@@ -213,4 +264,3 @@ int main (int argc, char** argv)
 	glutDisplayFunc(display);
 	glutMainLoop();
 }
-
