@@ -183,9 +183,9 @@ class Collision{
 		}
 
 		/* check collision between blob & all obstacles */
-		void collide(Blobs blobs){
-			if (is_colliding(blobs))
-				blobs.kill();
+		void collide(Blobs* blobs){
+			if (is_colliding(*blobs))
+				blobs->kill();
 		}
 
 		bool is_colliding(Blobs blobs) {
@@ -241,7 +241,7 @@ class Simulation{
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].render();
 				blobs[i].move();
-				collision.collide(blobs[i]); // BUG: blob not ded when colliding
+				collision.collide(&blobs[i]);
 			}
 			steps += 1;
 		}
