@@ -12,7 +12,7 @@
 
 /* Project Configurations */
 const int N_BLOB = 100;
-const int N_OBSTACLE = 4;
+const int N_OBSTACLE = 25;
 /* Project Configurations */
 
 
@@ -264,4 +264,3 @@ int main (int argc, char** argv)
 	glutDisplayFunc(display);
 	glutMainLoop();
 }
-
