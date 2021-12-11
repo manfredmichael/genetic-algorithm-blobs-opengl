@@ -57,11 +57,6 @@ class Paint{
 		}
 };
 
-class Collision{
-
-};
-
-
 class Blobs{
 	public:
 		static constexpr float RADIUS = 8;
@@ -169,6 +164,20 @@ class ObstacleFactory{
 
 };
 
+class Collision{
+	std::vector <Obstacle> obstacles;
+
+	public:
+		Collision(std::vector <Obstacle> new_obstacles){
+			add_obstacles(new_obstacles);
+		}
+
+		void add_obstacles(std::vector <Obstacle> new_obstacles){
+			for(int i = 0; i < (int) new_obstacles.size(); i++) { 
+				obstacles.push_back(new_obstacles[i]);
+			}
+		}
+};
 
 class Simulation{
 	public:
