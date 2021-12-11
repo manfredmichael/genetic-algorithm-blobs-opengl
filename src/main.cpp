@@ -67,6 +67,7 @@ class Blobs{
 		float y;
 		float movement_sequence[STEPS][2];    // movement sequence for each step
 		int step=0;    // step counter 
+		bool is_dead=false;
 
 		Blobs(){
 			reset();
@@ -85,16 +86,19 @@ class Blobs{
 
 		void move(){
 			/* change blob position with movement sequence on each step */
-			x += movement_sequence[step][0];
-			y += movement_sequence[step][1];
+			if (!is_dead){
+				x += movement_sequence[step][0];
+				y += movement_sequence[step][1];
+			}
 			step += 1;
 		}
 
 		void reset(){
-			/* reset blob positiona and step counter */
+			/* reset blob position and step counter */
 			x = -400;
 			y = 0;
 			step = 0;
+			is_dead=false;
 	}
 };
 
@@ -161,7 +165,6 @@ class ObstacleFactory{
 				obstacles[i].render();
 			}
 		}
-
 };
 
 class Collision{
