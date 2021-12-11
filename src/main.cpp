@@ -6,6 +6,8 @@
 #include<stdlib.h> 
 #include<math.h>
 #include<vector>
+#include<random>
+#include<time.h>
 #define pi 3.142857
 
 /* Project Configurations */
@@ -119,13 +121,13 @@ class Obstacle{
 
 class ObstacleFactory{
 	public:
-		static constexpr int MAX_X = 600;
-		static constexpr int MAX_Y = 500;
-		static constexpr int MIN_X = -800;
-		static constexpr int MIN_Y = -800;
+		static constexpr int MAX_X = 400;
+		static constexpr int MAX_Y = 400;
+		static constexpr int MIN_X = -400;
+		static constexpr int MIN_Y = -400;
 
-		static constexpr int MAX_W = 200;
-		static constexpr int MAX_H = 200;
+		static constexpr int MAX_W = 100;
+		static constexpr int MAX_H = 100;
 		static constexpr int MIN_W = 20;
 		static constexpr int MIN_H = 20;
 		
@@ -136,17 +138,22 @@ class ObstacleFactory{
 		}
 
 		void regenerate(){
+			/* set random seed */
+			unsigned int time_ui = static_cast<unsigned int>( time(NULL) ); 
+			srand( time_ui );
+
+			/* generate N_OBSTACLE new obstacles */
 			for(int i = 0; i < N_OBSTACLE; i++) { 
-				float x = (rand() % (MAX_X-MIN_X) + MIN_X);
-				float y = (rand() % (MAX_Y-MIN_Y) + MIN_Y);
-				float w = (rand() % (MAX_W) + MIN_W);
-				float h = (rand() % (MAX_H) + MIN_H);
-				/* float x = (rand() % (MAX_X+MIN_X+1)) - MIN_X; */
-				/* float y = (rand() % (MAX_Y+MIN_Y+1)) - MIN_Y; */
-				/* float w = (rand() % (MAX_W+MIN_W+1)) - MIN_W; */
-				/* float h = (rand() % (MAX_H+MIN_H+1)) - MIN_H; */
-				obstacles.push_back(Obstacle(x, y, w, h));
+				generate();
 			}
+		}
+
+		void generate(){
+				float x = MIN_X + (rand() % (int)(MAX_X - MIN_X));
+				float y = MIN_Y + (rand() % (int)(MAX_Y - MIN_Y));
+				float w = MIN_W + (rand() % (int)(MAX_W - MIN_W));
+				float h = MIN_H + (rand() % (int)(MAX_H - MIN_H));
+				obstacles.push_back(Obstacle(x, y, w, h));
 		}
 
 		void render(){
