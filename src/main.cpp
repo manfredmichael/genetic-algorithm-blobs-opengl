@@ -57,6 +57,11 @@ class Paint{
 		}
 };
 
+class Collision{
+
+};
+
+
 class Blobs{
 	public:
 		static constexpr float RADIUS = 8;
