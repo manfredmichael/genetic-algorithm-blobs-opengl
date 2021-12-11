@@ -121,9 +121,9 @@ class Obstacle{
 
 class ObstacleFactory{
 	public:
-		static constexpr int MAX_X = 400;
+		static constexpr int MAX_X = 700;
 		static constexpr int MAX_Y = 400;
-		static constexpr int MIN_X = -400;
+		static constexpr int MIN_X = -300;
 		static constexpr int MIN_Y = -400;
 
 		static constexpr int MAX_W = 100;
