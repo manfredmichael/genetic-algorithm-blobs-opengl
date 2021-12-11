@@ -109,7 +109,7 @@ class Obstacle{
 		}
 
 		void render(){
-			glColor3f(79/255.0, 9/255.0, 29/255.0);
+			glColor3f(221/255.0, 74/255.0, 72/255.0);
 			Paint::rect(x, y, w, h);
 		}
 };
@@ -118,6 +118,7 @@ class Obstacle{
 class Simulation{
 	public:
 		Blobs blobs [N_BLOB];
+		Obstacle obstacle = Obstacle(-250, 0, 50, 200);
 		int steps;    // step counter
 
 		Simulation(){
@@ -137,6 +138,8 @@ class Simulation{
 		}
 
 		void take_next_step(){
+			/* show obstacles */
+			obstacle.render();
 			/* move and show blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].render();
@@ -155,7 +158,6 @@ class Simulation{
 };
 
 Simulation simulation = Simulation();
-Obstacle obstacle = Obstacle(-50, 0, 50, 200);
 
 // function to initialize
 void myInit (void)
@@ -184,11 +186,10 @@ void display (void)
 	/* * add walls */
 	/* * add collisions */
 	/* * add blob death on collision */
-	/* * add finish zone, with color: glColor3f(221/255.0, 74/255.0, 72/255.0); */
+	/* * add finish zone, with color: glColor3f(79/255.0, 9/255.0, 29/255.0); */
 
 
 	simulation.simulate();
-	obstacle.render();
 
 	glEnd();
 	glFlush();
@@ -198,6 +199,7 @@ int main (int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glDisable(GL_DEPTH_TEST);
 	
 	// giving window size in X- and Y- direction
 	glutInitWindowSize(1366, 768);
