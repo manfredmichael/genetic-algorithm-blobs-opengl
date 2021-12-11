@@ -109,6 +109,7 @@ class Obstacle{
 		}
 
 		void render(){
+			glColor3f(79/255.0, 9/255.0, 29/255.0);
 			Paint::rect(x, y, w, h);
 		}
 };
@@ -154,7 +155,7 @@ class Simulation{
 };
 
 Simulation simulation = Simulation();
-Obstacle obstacle = Obstacle(0, 0, 100, 100);
+Obstacle obstacle = Obstacle(-50, 0, 50, 200);
 
 // function to initialize
 void myInit (void)
@@ -162,7 +163,7 @@ void myInit (void)
 
 	// making background color black as first
 	// 3 arguments all are 0.0
-	glClearColor(1, 1, 1, 1.0);
+	glClearColor(245/255.0, 238/255.0, 220/255.0, 1.0);
 	
 	
 	// breadth of picture boundary is 1 pixel
@@ -183,6 +184,7 @@ void display (void)
 	/* * add walls */
 	/* * add collisions */
 	/* * add blob death on collision */
+	/* * add finish zone, with color: glColor3f(221/255.0, 74/255.0, 72/255.0); */
 
 
 	simulation.simulate();
