@@ -15,6 +15,8 @@ const int N_BLOB = 100;
 const int N_OBSTACLE = 25;
 const int STEPS = 3000;
 const int SPEED = 20;
+
+const float MUTATION_RATE = 0.04;
 /* Project Configurations */
 
 
@@ -320,8 +322,28 @@ class Collision{
 
 class GeneticAlgorithm{
 	public:
-		static void generate_next_population(Blobs* blobs) {
+		static void generate_next_population(Blobs* population) {
+			for(int i = 0; i < N_BLOB; i++) {
+				GeneticAlgorithm::mutate(&population[i]);
+			}
 		}
+
+		static void mutate(Blobs* blobs) {
+			for(int i = 0; i < STEPS; i++) { 
+				if(will_mutate()) {
+				/* mutatex, y coordinate movement */	
+					blobs->gene.movement_sequence[i][0] = (rand() % (SPEED+1)) - SPEED/2;
+					blobs->gene.movement_sequence[i][1] = (rand() % (SPEED+1)) - SPEED/2;
+				}
+			}
+		}
+
+		static bool will_mutate(){
+			float r = ((double) rand() / (RAND_MAX));
+			if (r<MUTATION_RATE)
+				return true;
+			return false;
+	}
 };
 
 
@@ -375,6 +397,9 @@ class Simulation{
 			steps = 0;
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].add_distance_reward(target);
+			}
+			GeneticAlgorithm::generate_next_population(blobs);
+			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].reset();
 			}
 		}
