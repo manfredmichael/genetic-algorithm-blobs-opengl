@@ -13,6 +13,8 @@
 /* Project Configurations */
 const int N_BLOB = 100;
 const int N_OBSTACLE = 25;
+const int STEPS = 3000;
+const int SPEED = 20;
 /* Project Configurations */
 
 
@@ -53,29 +55,65 @@ class Paint{
 				glVertex2f(x+w/2, y-h/2); 
 				glVertex2f(x+w/2, y+h/2); 
 			glEnd();
+		}
+};
 
+class Gene{
+	public:
+		float reward;
+		float movement_sequence[STEPS][2];    // movement sequence for each step
+
+		Gene(){
+			reset();
+			initialize_movement_sequence();
+		}
+
+		void initialize_movement_sequence(){
+			for(int i = 0; i < STEPS; i++) { 
+				/* x, y coordinate movement */	
+				movement_sequence[i][0] = (rand() % (SPEED+1)) - SPEED/2;
+				movement_sequence[i][1] = (rand() % (SPEED+1)) - SPEED/2;
+			}
+		}
+
+		/* --------------- */
+		/* 	 	 Rewards     */    
+		/* --------------- */
+
+		void add_step_reward(){
+			reward += 1;
+		}
+		
+		void add_kill_reward(){
+			reward -= 500;
+		}
+
+		void add_finish_reward(){
+			reward += 3000;
+		}
+
+		float* get_movement_step(int step){
+			return movement_sequence[step];
+		}
+
+		void reset(){
+			reward = 0;
 		}
 };
 
 class Blobs{
 	public:
 		static constexpr float RADIUS = 8;
-		static constexpr int SPEED = 4;
-		static constexpr int STEPS = 3000;
+		int step=0;    // step counter 
 
 		float x;
 		float y;
-		float movement_sequence[STEPS][2];    // movement sequence for each step
-		int step=0;    // step counter 
 		bool is_dead=false;
+
+		Gene gene;
 
 		Blobs(){
 			reset();
-			for(int i = 0; i < STEPS; i++) { 
-				/* x, y coordinate movement */	
-				movement_sequence[i][0] = (rand() % (SPEED+1)) - SPEED/2;
-				movement_sequence[i][1] = (rand() % (SPEED+1)) - SPEED/2;
-			}
 		}
 
 		void render(){
@@ -87,8 +125,9 @@ class Blobs{
 		void move(){
 			/* change blob position with movement sequence on each step */
 			if (!is_dead){
-				x += movement_sequence[step][0];
-				y += movement_sequence[step][1];
+				x += gene.get_movement_step(step)[0];
+				y += gene.get_movement_step(step)[1];
+				gene.add_step_reward();
 			}
 			step += 1;
 		}
@@ -99,11 +138,15 @@ class Blobs{
 			y = 0;
 			step = 0;
 			is_dead=false;
+			gene.reset();
 		}
 
 		void kill(){
 			/* scary method */
-			is_dead=true;
+			if (!is_dead){
+				gene.add_kill_reward();
+				is_dead=true;
+			}
 		}
 };
 
@@ -123,6 +166,15 @@ class Obstacle{
 
 		void render(){
 			glColor3f(221/255.0, 74/255.0, 72/255.0);
+			Paint::rect(x, y, w, h);
+		}
+};
+
+
+class Target: public Obstacle{
+	public:
+		void render(){
+			glColor3f(79/255.0, 9/255.0, 29/255.0);
 			Paint::rect(x, y, w, h);
 		}
 };
@@ -176,6 +228,20 @@ class Collision{
 	std::vector <Obstacle> obstacles;
 
 	public:
+		bool static is_colliding(Obstacle obstacle, Blobs blobs){
+				float x_obs = obstacle.x;
+				float y_obs = obstacle.y;
+				float w_obs_half = obstacle.w/2;
+				float h_obs_half = obstacle.h/2;
+
+				if(blobs.x > x_obs - w_obs_half && \
+					 blobs.x < x_obs + w_obs_half && \
+					 blobs.y > y_obs - h_obs_half && \
+					 blobs.y < y_obs + h_obs_half ) 
+					 return true;
+				return false;
+		}
+
 		void add_obstacles(std::vector <Obstacle> new_obstacles){
 			for(int i = 0; i < (int) new_obstacles.size(); i++) { 
 				obstacles.push_back(new_obstacles[i]);
@@ -184,22 +250,14 @@ class Collision{
 
 		/* check collision between blob & all obstacles */
 		void collide(Blobs* blobs){
-			if (is_colliding(*blobs))
+			if (has_collided(*blobs))
 				blobs->kill();
 		}
 
-		bool is_colliding(Blobs blobs) {
+		bool has_collided(Blobs blobs) {
 			for(int i = 0; i < (int) obstacles.size(); i++) { 
-				float x_obs = obstacles[i].x;
-				float y_obs = obstacles[i].y;
-				float w_obs_half = obstacles[i].w/2;
-				float h_obs_half = obstacles[i].h/2;
-
-				if(blobs.x > x_obs - w_obs_half && \
-					 blobs.x < x_obs + w_obs_half && \
-					 blobs.y > y_obs - h_obs_half && \
-					 blobs.y < y_obs + h_obs_half ) 
-					 return true;
+				if (Collision::is_colliding(obstacles[i], blobs))
+					return true;
 			}
 			return false;
 		}
@@ -227,7 +285,7 @@ class Simulation{
 		}
 
 		void simulate(){
-			if (steps < Blobs::STEPS){
+			if (steps < STEPS){
 				take_next_step();
 			} else {    // reset simulation when maximum step was taken 
 				reset();
@@ -281,10 +339,7 @@ void display (void)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	/* TODO: */ 
-	/* * add walls */
-	/* * add collisions */
-	/* * add blob death on collision */
-	/* * add finish zone, with color: glColor3f(79/255.0, 9/255.0, 29/255.0); */
+	/* * add death distance to target */
 
 
 	simulation.simulate();
