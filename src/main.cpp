@@ -12,12 +12,12 @@
 #define pi 3.142857
 
 /* Project Configurations */
-const int N_BLOB = 100;
+const int N_BLOB = 200;
 const int N_OBSTACLE = 25;
-const int STEPS = 3000;
-const int SPEED = 20;
+const int STEPS = 2000;
+const int SPEED = 10;
 
-const float MUTATION_RATE = 0.04;
+const float MUTATION_RATE = 0.08;
 /* Project Configurations */
 
 
@@ -89,7 +89,7 @@ class Target: public Obstacle{
 	public:
 		static constexpr int MAX_X = 700;
 		static constexpr int MAX_Y = 300;
-		static constexpr int MIN_X = 300;
+		static constexpr int MIN_X = 100;
 		static constexpr int MIN_Y = -300;
 
 		Target(){
@@ -178,15 +178,15 @@ class Gene{
 		/* --------------- */
 
 		void add_step_reward(){
-			reward += 0.01;
+			reward += 0.001;
 		}
 		
 		void add_kill_reward(){
-			reward -= 50;
+			reward -= 450;
 		}
 
 		void add_finish_reward(){
-			reward += 5000;
+			reward += 80000;
 		}
 
 		void add_distance_to_target_reward(Target target, float x, float y){
@@ -194,10 +194,10 @@ class Gene{
 			float x_distance = target.x - x;
 			float y_distance = target.y - y;
 			float distance = sqrt(x_distance*x_distance + y_distance*y_distance); 
-			if (distance > 800) {
-				distance = 800;
+			if (distance > 900) {
+				distance = 900;
 			}
-			float score = (1000 - distance)/100;
+			float score = (1000 - distance)/50;
 			reward += score * score * score;
 		}
 
@@ -206,7 +206,7 @@ class Gene{
 		}
 
 		float get_reward(){
-			printf("reward: %f\n", reward);
+			/* printf("reward: %f\n", reward); */
 			if (reward<0.001) return 0.001;
 			return reward;
 		}
@@ -273,8 +273,7 @@ class Blobs{
 		}
 
 		void add_distance_reward(Target target){
-			if(is_dead)
-				gene.add_distance_to_target_reward(target, x, y);
+			gene.add_distance_to_target_reward(target, x, y);
 		}
 };
 
