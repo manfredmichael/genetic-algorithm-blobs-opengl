@@ -128,6 +128,16 @@ class Obstacle{
 };
 
 
+class Target: public Obstacle{
+	public:
+		void render(){
+			glColor3f(79/255.0, 9/255.0, 29/255.0);
+			Paint::rect(x, y, w, h);
+		}
+
+};
+
+
 class ObstacleFactory{
 	public:
 		static constexpr int MAX_X = 700;
@@ -290,7 +300,6 @@ void display (void)
 	/* * add walls */
 	/* * add collisions */
 	/* * add blob death on collision */
-	/* * add finish zone, with color: glColor3f(79/255.0, 9/255.0, 29/255.0); */
 
 
 	simulation.simulate();
