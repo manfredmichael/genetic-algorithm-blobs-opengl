@@ -198,6 +198,11 @@ class Gene{
 			return movement_sequence[step];
 		}
 
+		float get_reward(){
+			if (reward<0) return 0;
+			return reward;
+		}
+
 		void reset(){
 			reward = 0;
 		}
@@ -263,7 +268,7 @@ class Blobs{
 		void add_distance_reward(Target target){
 			if(is_dead)
 				gene.add_distance_to_target_reward(target);
-	}
+		}
 };
 
 
@@ -379,11 +384,11 @@ class Simulation{
 		}
 
 		void take_next_step(){
-			/* show obstacles */
+			/* show obstacles & target */
 			obstacleFactory.render();
-			/* show target*/
 			target.render();
-			/* move and show blobs */
+
+			/* move and show all blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].render();
 				blobs[i].move();
@@ -431,7 +436,7 @@ void display (void)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	/* TODO: */ 
-	/* * add death distance to target */
+	/* * add crossover in genetic algorithm class */
 
 
 	simulation.simulate();
