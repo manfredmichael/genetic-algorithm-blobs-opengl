@@ -149,7 +149,7 @@ class Blobs{
 			}
 		}
 
-		void finished(){
+		void finish(){
 			/* glorious method */
 			if (!is_dead){
 				gene.add_finish_reward();
