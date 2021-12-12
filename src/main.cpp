@@ -196,7 +196,6 @@ class Gene{
 			return movement_sequence[step];
 		}
 
-
 		void reset(){
 			reward = 0;
 		}
@@ -320,15 +319,17 @@ class Collision{
 
 
 class GeneticAlgorithm{
-	
+	public:
+		static void generate_next_population(Blobs* blobs) {
+		}
 };
 
 
 class Simulation{
 	public:
-		Blobs blobs [N_BLOB];
 		ObstacleFactory obstacleFactory;
 		Target target;
+		Blobs blobs [N_BLOB];
 		int steps;    // step counter
 
 		Collision collision = Collision();
