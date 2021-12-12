@@ -199,7 +199,7 @@ class Target{
 		}
 
 		void render(){
-			glColor3f(79/255.0, 9/255.0, 29/255.0);
+			glColor3f(154/255.0, 230/255.0, 110/255.0);
 			Paint::rect(x, y, w, h);
 		}
 
@@ -257,6 +257,7 @@ class ObstacleFactory{
 
 class Collision{
 	std::vector <Obstacle> obstacles;
+	std::vector <Target> targets;
 
 	public:
 		bool static is_colliding(Obstacle obstacle, Blobs blobs){
@@ -279,6 +280,10 @@ class Collision{
 			}
 		}
 
+		void add_target(Target target){
+			targets.push_back(target);
+		}
+
 		/* check collision between blob & all obstacles */
 		void collide(Blobs* blobs){
 			if (is_colliding_with_obstacles(*blobs))
@@ -299,6 +304,7 @@ class Simulation{
 	public:
 		Blobs blobs [N_BLOB];
 		ObstacleFactory obstacleFactory;
+		Target target;
 		int steps;    // step counter
 
 		Collision collision = Collision();
@@ -309,6 +315,7 @@ class Simulation{
 
 			/* add all obstacles to collision manager */
 			collision.add_obstacles(obstacleFactory.obstacles);
+			collision.add_target(target);
 
 			/* initialize all blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
@@ -325,6 +332,8 @@ class Simulation{
 		}
 
 		void take_next_step(){
+			/* show target*/
+			target.render();
 			/* show obstacles */
 			obstacleFactory.render();
 			/* move and show blobs */
