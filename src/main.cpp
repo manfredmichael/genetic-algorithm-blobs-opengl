@@ -58,6 +58,7 @@ class Paint{
 		}
 };
 
+
 class Gene{
 	public:
 		float reward;
@@ -100,6 +101,7 @@ class Gene{
 			reward = 0;
 		}
 };
+
 
 class Blobs{
 	public:
@@ -157,6 +159,7 @@ class Blobs{
 			}
 		}
 };
+
 
 class Obstacle{
 	public:
@@ -251,6 +254,7 @@ class ObstacleFactory{
 		}
 };
 
+
 class Collision{
 	std::vector <Obstacle> obstacles;
 
@@ -277,11 +281,11 @@ class Collision{
 
 		/* check collision between blob & all obstacles */
 		void collide(Blobs* blobs){
-			if (has_collided(*blobs))
+			if (is_colliding_with_obstacles(*blobs))
 				blobs->kill();
 		}
 
-		bool has_collided(Blobs blobs) {
+		bool is_colliding_with_obstacles(Blobs blobs) {
 			for(int i = 0; i < (int) obstacles.size(); i++) { 
 				if (Collision::is_colliding(obstacles[i], blobs))
 					return true;
@@ -289,6 +293,7 @@ class Collision{
 			return false;
 		}
 };
+
 
 class Simulation{
 	public:
