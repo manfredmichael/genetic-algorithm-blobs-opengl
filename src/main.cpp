@@ -176,6 +176,20 @@ class Collision{
 	std::vector <Obstacle> obstacles;
 
 	public:
+		bool static is_colliding(Obstacle obstacle, Blobs blobs){
+				float x_obs = obstacle.x;
+				float y_obs = obstacle.y;
+				float w_obs_half = obstacle.w/2;
+				float h_obs_half = obstacle.h/2;
+
+				if(blobs.x > x_obs - w_obs_half && \
+					 blobs.x < x_obs + w_obs_half && \
+					 blobs.y > y_obs - h_obs_half && \
+					 blobs.y < y_obs + h_obs_half ) 
+					 return true;
+				return false;
+		}
+
 		void add_obstacles(std::vector <Obstacle> new_obstacles){
 			for(int i = 0; i < (int) new_obstacles.size(); i++) { 
 				obstacles.push_back(new_obstacles[i]);
@@ -184,22 +198,14 @@ class Collision{
 
 		/* check collision between blob & all obstacles */
 		void collide(Blobs* blobs){
-			if (is_colliding(*blobs))
+			if (has_collided(*blobs))
 				blobs->kill();
 		}
 
-		bool is_colliding(Blobs blobs) {
+		bool has_collided(Blobs blobs) {
 			for(int i = 0; i < (int) obstacles.size(); i++) { 
-				float x_obs = obstacles[i].x;
-				float y_obs = obstacles[i].y;
-				float w_obs_half = obstacles[i].w/2;
-				float h_obs_half = obstacles[i].h/2;
-
-				if(blobs.x > x_obs - w_obs_half && \
-					 blobs.x < x_obs + w_obs_half && \
-					 blobs.y > y_obs - h_obs_half && \
-					 blobs.y < y_obs + h_obs_half ) 
-					 return true;
+				if (Collision::is_colliding(obstacles[i], blobs))
+					return true;
 			}
 			return false;
 		}
