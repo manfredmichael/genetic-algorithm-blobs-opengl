@@ -168,6 +168,8 @@ class Obstacle{
 		float w;
 		float h;
 
+		Obstacle() {}
+
 		Obstacle(float x_, float y_, float w_, float h_) {
 			x = x_;
 			y = y_;
@@ -182,19 +184,16 @@ class Obstacle{
 };
 
 
-class Target{
+class Target: public Obstacle{
 	public:
 		static constexpr int MAX_X = 700;
 		static constexpr int MAX_Y = 300;
 		static constexpr int MIN_X = 300;
 		static constexpr int MIN_Y = -300;
 
-		float x;
-		float y;
-		float w = 50;
-		float h = 50;
-
 		Target(){
+			w = 50;
+			h = 50;
 			reset();
 		}
 
@@ -286,8 +285,20 @@ class Collision{
 
 		/* check collision between blob & all obstacles */
 		void collide(Blobs* blobs){
+			if (is_colliding_with_targets(*blobs)){
+				blobs->finish();
+		}
 			if (is_colliding_with_obstacles(*blobs))
 				blobs->kill();
+		}
+
+
+		bool is_colliding_with_targets(Blobs blobs) {
+			for(int i = 0; i < (int) targets.size(); i++) { 
+				if (Collision::is_colliding(targets[i], blobs))
+					return true;
+			}
+			return false;
 		}
 
 		bool is_colliding_with_obstacles(Blobs blobs) {
