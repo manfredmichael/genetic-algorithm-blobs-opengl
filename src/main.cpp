@@ -256,7 +256,7 @@ class Blobs{
 
 class Collision{
 	std::vector <Obstacle> obstacles;
-	std::vector <Target> targets;
+	Target target;
 
 	public:
 		bool static is_colliding(Obstacle obstacle, Blobs blobs){
@@ -279,23 +279,21 @@ class Collision{
 			}
 		}
 
-		void add_target(Target target){
-			targets.push_back(target);
+		void add_target(Target new_target){
+			target = new_target;
 		}
 
 		/* check collision between blob & all obstacles */
 		void collide(Blobs* blobs){
-			if (is_colliding_with_targets(*blobs))
+			if (is_colliding_with_target(*blobs))
 				blobs->finish();
 			if (is_colliding_with_obstacles(*blobs))
 				blobs->kill();
 		}
 
-		bool is_colliding_with_targets(Blobs blobs) {
-			for(int i = 0; i < (int) targets.size(); i++) { 
-				if (Collision::is_colliding(targets[i], blobs))
-					return true;
-			}
+		bool is_colliding_with_target(Blobs blobs) {
+			if (Collision::is_colliding(target, blobs))
+				return true;
 			return false;
 		}
 
@@ -346,10 +344,10 @@ class Simulation{
 		}
 
 		void take_next_step(){
-			/* show target*/
-			target.render();
 			/* show obstacles */
 			obstacleFactory.render();
+			/* show target*/
+			target.render();
 			/* move and show blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].render();
