@@ -186,9 +186,16 @@ class Gene{
 			reward += 3000;
 		}
 
+		void add_distance_to_target_reward(Target target){
+			/* punish blobs with distance from target */
+			float distance = sqrt(target.x*target.x + target.y*target.y); 
+			reward -= distance * 2;
+		}
+
 		float* get_movement_step(int step){
 			return movement_sequence[step];
 		}
+
 
 		void reset(){
 			reward = 0;
