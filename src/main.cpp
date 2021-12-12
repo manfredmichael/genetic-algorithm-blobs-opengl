@@ -258,6 +258,11 @@ class Blobs{
 				is_dead=true;
 			}
 		}
+
+		void add_distance_reward(Target target){
+			if(is_dead)
+				gene.add_distance_to_target_reward(target);
+	}
 };
 
 
@@ -368,6 +373,7 @@ class Simulation{
 			/* reset all blobs and step counter */
 			steps = 0;
 			for(int i = 0; i < N_BLOB; i++) { 
+				blobs[i].add_distance_reward(target);
 				blobs[i].reset();
 			}
 		}
