@@ -348,7 +348,29 @@ class GeneticAlgorithm{
 			if (r<MUTATION_RATE)
 				return true;
 			return false;
-	}
+		}
+
+		static float get_population_reward_total(Blobs* population) {
+			float total = 0;
+			for(int i = 0; i < N_BLOB; i++) {
+				total += population->gene.get_reward();
+			}
+			return total;
+		}
+
+		static std::vector <Blobs> get_parent_pool(Blobs* population) {
+			float population_reward = get_population_reward_total(population);
+			std::vector <Blobs> parent_pool;
+
+			/* Add blobs to parent pool by their reward score */
+			for(int i = 0; i < N_BLOB; i++) {
+				int n_selected = (int) N_BLOB * population[i].gene.get_reward() / population_reward;
+				for(int j = 0; j < n_selected; j++)
+					parent_pool.push_back(population[i]);
+			}
+
+			return parent_pool;
+		}	
 };
 
 
