@@ -59,6 +59,99 @@ class Paint{
 };
 
 
+class Obstacle{
+	public:
+		float x;
+		float y;
+		float w;
+		float h;
+
+		Obstacle() {}
+
+		Obstacle(float x_, float y_, float w_, float h_) {
+			x = x_;
+			y = y_;
+			w = w_;
+			h = h_;
+		}
+
+		void render(){
+			glColor3f(221/255.0, 74/255.0, 72/255.0);
+			Paint::rect(x, y, w, h);
+		}
+};
+
+
+class Target: public Obstacle{
+	public:
+		static constexpr int MAX_X = 700;
+		static constexpr int MAX_Y = 300;
+		static constexpr int MIN_X = 300;
+		static constexpr int MIN_Y = -300;
+
+		Target(){
+			w = 50;
+			h = 50;
+			reset();
+		}
+
+		void render(){
+			glColor3f(154/255.0, 230/255.0, 110/255.0);
+			Paint::rect(x, y, w, h);
+		}
+
+		void reset(){
+			x = MIN_X + (rand() % (int)(MAX_X - MIN_X));
+			y = MIN_Y + (rand() % (int)(MAX_Y - MIN_Y));
+		}
+};
+
+
+class ObstacleFactory{
+	public:
+		static constexpr int MAX_X = 700;
+		static constexpr int MAX_Y = 400;
+		static constexpr int MIN_X = -300;
+		static constexpr int MIN_Y = -400;
+
+		static constexpr int MAX_W = 100;
+		static constexpr int MAX_H = 100;
+		static constexpr int MIN_W = 20;
+		static constexpr int MIN_H = 20;
+		
+		std::vector <Obstacle> obstacles;
+
+		ObstacleFactory() {
+			regenerate();
+		}
+
+		void regenerate(){
+			/* set random seed */
+			unsigned int time_ui = static_cast<unsigned int>( time(NULL) ); 
+			srand( time_ui );
+
+			/* generate N_OBSTACLE new obstacles */
+			for(int i = 0; i < N_OBSTACLE; i++) { 
+				generate();
+			}
+		}
+
+		void generate(){
+				float x = MIN_X + (rand() % (int)(MAX_X - MIN_X));
+				float y = MIN_Y + (rand() % (int)(MAX_Y - MIN_Y));
+				float w = MIN_W + (rand() % (int)(MAX_W - MIN_W));
+				float h = MIN_H + (rand() % (int)(MAX_H - MIN_H));
+				obstacles.push_back(Obstacle(x, y, w, h));
+		}
+
+		void render(){
+			for(int i = 0; i < N_BLOB; i++) { 
+				obstacles[i].render();
+			}
+		}
+};
+
+
 class Gene{
 	public:
 		float reward;
@@ -161,99 +254,6 @@ class Blobs{
 };
 
 
-class Obstacle{
-	public:
-		float x;
-		float y;
-		float w;
-		float h;
-
-		Obstacle() {}
-
-		Obstacle(float x_, float y_, float w_, float h_) {
-			x = x_;
-			y = y_;
-			w = w_;
-			h = h_;
-		}
-
-		void render(){
-			glColor3f(221/255.0, 74/255.0, 72/255.0);
-			Paint::rect(x, y, w, h);
-		}
-};
-
-
-class Target: public Obstacle{
-	public:
-		static constexpr int MAX_X = 700;
-		static constexpr int MAX_Y = 300;
-		static constexpr int MIN_X = 300;
-		static constexpr int MIN_Y = -300;
-
-		Target(){
-			w = 50;
-			h = 50;
-			reset();
-		}
-
-		void render(){
-			glColor3f(154/255.0, 230/255.0, 110/255.0);
-			Paint::rect(x, y, w, h);
-		}
-
-		void reset(){
-			x = MIN_X + (rand() % (int)(MAX_X - MIN_X));
-			y = MIN_Y + (rand() % (int)(MAX_Y - MIN_Y));
-		}
-};
-
-
-class ObstacleFactory{
-	public:
-		static constexpr int MAX_X = 700;
-		static constexpr int MAX_Y = 400;
-		static constexpr int MIN_X = -300;
-		static constexpr int MIN_Y = -400;
-
-		static constexpr int MAX_W = 100;
-		static constexpr int MAX_H = 100;
-		static constexpr int MIN_W = 20;
-		static constexpr int MIN_H = 20;
-		
-		std::vector <Obstacle> obstacles;
-
-		ObstacleFactory() {
-			regenerate();
-		}
-
-		void regenerate(){
-			/* set random seed */
-			unsigned int time_ui = static_cast<unsigned int>( time(NULL) ); 
-			srand( time_ui );
-
-			/* generate N_OBSTACLE new obstacles */
-			for(int i = 0; i < N_OBSTACLE; i++) { 
-				generate();
-			}
-		}
-
-		void generate(){
-				float x = MIN_X + (rand() % (int)(MAX_X - MIN_X));
-				float y = MIN_Y + (rand() % (int)(MAX_Y - MIN_Y));
-				float w = MIN_W + (rand() % (int)(MAX_W - MIN_W));
-				float h = MIN_H + (rand() % (int)(MAX_H - MIN_H));
-				obstacles.push_back(Obstacle(x, y, w, h));
-		}
-
-		void render(){
-			for(int i = 0; i < N_BLOB; i++) { 
-				obstacles[i].render();
-			}
-		}
-};
-
-
 class Collision{
 	std::vector <Obstacle> obstacles;
 	std::vector <Target> targets;
@@ -285,13 +285,11 @@ class Collision{
 
 		/* check collision between blob & all obstacles */
 		void collide(Blobs* blobs){
-			if (is_colliding_with_targets(*blobs)){
+			if (is_colliding_with_targets(*blobs))
 				blobs->finish();
-		}
 			if (is_colliding_with_obstacles(*blobs))
 				blobs->kill();
 		}
-
 
 		bool is_colliding_with_targets(Blobs blobs) {
 			for(int i = 0; i < (int) targets.size(); i++) { 
@@ -308,6 +306,11 @@ class Collision{
 			}
 			return false;
 		}
+};
+
+
+class GeneticAlgorithm{
+	
 };
 
 
