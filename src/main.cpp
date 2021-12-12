@@ -171,11 +171,30 @@ class Obstacle{
 };
 
 
-class Target: public Obstacle{
+class Target{
 	public:
+		static constexpr int MAX_X = 700;
+		static constexpr int MAX_Y = 300;
+		static constexpr int MIN_X = 300;
+		static constexpr int MIN_Y = -300;
+
+		float x;
+		float y;
+		float w = 50;
+		float h = 50;
+
+		Target(){
+			reset();
+		}
+
 		void render(){
 			glColor3f(79/255.0, 9/255.0, 29/255.0);
 			Paint::rect(x, y, w, h);
+		}
+
+		void reset(){
+			x = MIN_X + (rand() % (int)(MAX_X - MIN_X));
+			y = MIN_Y + (rand() % (int)(MAX_Y - MIN_Y));
 		}
 };
 
