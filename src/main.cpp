@@ -13,6 +13,8 @@
 /* Project Configurations */
 const int N_BLOB = 100;
 const int N_OBSTACLE = 25;
+const int STEPS = 3000;
+const int SPEED = 4;
 /* Project Configurations */
 
 
@@ -53,29 +55,44 @@ class Paint{
 				glVertex2f(x+w/2, y-h/2); 
 				glVertex2f(x+w/2, y+h/2); 
 			glEnd();
+		}
+};
 
+class Gene{
+	public:
+		float reward;
+		float movement_sequence[STEPS][2];    // movement sequence for each step
+
+		Gene(){
+			initialize_movement_sequence();
+		}
+
+		void initialize_movement_sequence(){
+			for(int i = 0; i < STEPS; i++) { 
+				/* x, y coordinate movement */	
+				movement_sequence[i][0] = (rand() % (SPEED+1)) - SPEED/2;
+				movement_sequence[i][1] = (rand() % (SPEED+1)) - SPEED/2;
+			}
+		}
+
+		float* get_movement_step(int step){
+			return movement_sequence[step];
 		}
 };
 
 class Blobs{
 	public:
 		static constexpr float RADIUS = 8;
-		static constexpr int SPEED = 4;
-		static constexpr int STEPS = 3000;
+		int step=0;    // step counter 
 
 		float x;
 		float y;
-		float movement_sequence[STEPS][2];    // movement sequence for each step
-		int step=0;    // step counter 
 		bool is_dead=false;
+
+		Gene gene;
 
 		Blobs(){
 			reset();
-			for(int i = 0; i < STEPS; i++) { 
-				/* x, y coordinate movement */	
-				movement_sequence[i][0] = (rand() % (SPEED+1)) - SPEED/2;
-				movement_sequence[i][1] = (rand() % (SPEED+1)) - SPEED/2;
-			}
 		}
 
 		void render(){
@@ -87,8 +104,8 @@ class Blobs{
 		void move(){
 			/* change blob position with movement sequence on each step */
 			if (!is_dead){
-				x += movement_sequence[step][0];
-				y += movement_sequence[step][1];
+				x += gene.get_movement_step(step)[0];
+				y += gene.get_movement_step(step)[1];
 			}
 			step += 1;
 		}
@@ -242,7 +259,7 @@ class Simulation{
 		}
 
 		void simulate(){
-			if (steps < Blobs::STEPS){
+			if (steps < STEPS){
 				take_next_step();
 			} else {    // reset simulation when maximum step was taken 
 				reset();
