@@ -199,7 +199,7 @@ class Gene{
 		}
 
 		float get_reward(){
-			if (reward<0) return 0;
+			if (reward<10) return 10;
 			return reward;
 		}
 
@@ -328,9 +328,33 @@ class Collision{
 class GeneticAlgorithm{
 	public:
 		static void generate_next_population(Blobs* population) {
+			Blobs new_population [N_BLOB];
+			std::vector <Blobs> parent_pool = get_parent_pool(population);
 			for(int i = 0; i < N_BLOB; i++) {
-				GeneticAlgorithm::mutate(&population[i]);
+				new_population[i] = crossover(parent_pool);
+				mutate(&new_population[i]);
 			}
+		}
+
+		static Blobs crossover(std::vector <Blobs> parent_pool) {
+			Blobs a = select_parent(parent_pool);
+			Blobs b = select_parent(parent_pool);
+			return crossover_gene(a, b);
+		}
+
+		static Blobs crossover_gene(Blobs a, Blobs b) {
+			Blobs child = Blobs();
+			for(int i = 0; i < STEPS; i++) {
+					float r = ((double) rand() / (RAND_MAX));
+					if (r < 0.5) {
+						child.gene.movement_sequence[i][0] = a.gene.movement_sequence[i][0];
+						child.gene.movement_sequence[i][1] = a.gene.movement_sequence[i][1];
+					} else {
+						child.gene.movement_sequence[i][0] = b.gene.movement_sequence[i][0];
+						child.gene.movement_sequence[i][1] = b.gene.movement_sequence[i][1];
+					}
+			}
+			return child;
 		}
 
 		static void mutate(Blobs* blobs) {
@@ -364,13 +388,18 @@ class GeneticAlgorithm{
 
 			/* Add blobs to parent pool by their reward score */
 			for(int i = 0; i < N_BLOB; i++) {
-				int n_selected = (int) N_BLOB * population[i].gene.get_reward() / population_reward;
+				int n_selected = (int) (N_BLOB * population[i].gene.get_reward() / population_reward);
 				for(int j = 0; j < n_selected; j++)
 					parent_pool.push_back(population[i]);
 			}
 
 			return parent_pool;
-		}	
+		}
+
+		static Blobs select_parent(std::vector <Blobs> parent_pool){
+			int selected_index = rand() % (int) parent_pool.size();
+			return parent_pool[selected_index];
+		}
 };
 
 
@@ -384,7 +413,6 @@ class Simulation{
 		Collision collision = Collision();
 
 		Simulation(){
-			reset();
 			obstacleFactory = ObstacleFactory();
 
 			/* add all obstacles to collision manager */
@@ -395,6 +423,7 @@ class Simulation{
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i] = Blobs();
 			}
+			reset();
 		}
 
 		void simulate(){
