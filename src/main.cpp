@@ -8,6 +8,7 @@
 #include<vector>
 #include<random>
 #include<time.h>
+
 #define pi 3.142857
 
 /* Project Configurations */
@@ -154,7 +155,7 @@ class ObstacleFactory{
 };
 
 
-class Gene{
+class Gene{ 
 	public:
 		float reward;
 		float movement_sequence[STEPS][2];    // movement sequence for each step
@@ -177,21 +178,27 @@ class Gene{
 		/* --------------- */
 
 		void add_step_reward(){
-			reward += 1;
+			reward += 0.01;
 		}
 		
 		void add_kill_reward(){
-			reward -= 500;
+			reward -= 100;
 		}
 
 		void add_finish_reward(){
 			reward += 3000;
 		}
 
-		void add_distance_to_target_reward(Target target){
-			/* punish blobs with distance from target */
-			float distance = sqrt(target.x*target.x + target.y*target.y); 
-			reward -= distance * 2;
+		void add_distance_to_target_reward(Target target, float x, float y){
+			/* reward blobs with smaller distance from target */
+			float x_distance = target.x - x;
+			float y_distance = target.y - y;
+			float distance = sqrt(x_distance*x_distance + y_distance*y_distance); 
+			if (distance > 800) {
+				distance = 800;
+			}
+			float score = (800 - distance)/10;
+			reward += score * score;
 		}
 
 		float* get_movement_step(int step){
@@ -199,6 +206,7 @@ class Gene{
 		}
 
 		float get_reward(){
+			printf("reward: %f\n", reward);
 			if (reward<10) return 10;
 			return reward;
 		}
@@ -213,7 +221,6 @@ class Blobs{
 	public:
 		static constexpr float RADIUS = 8;
 		int step=0;    // step counter 
-
 		float x;
 		float y;
 		bool is_dead=false;
@@ -267,7 +274,7 @@ class Blobs{
 
 		void add_distance_reward(Target target){
 			if(is_dead)
-				gene.add_distance_to_target_reward(target);
+				gene.add_distance_to_target_reward(target, x, y);
 		}
 };
 
@@ -330,9 +337,15 @@ class GeneticAlgorithm{
 		static void generate_next_population(Blobs* population) {
 			Blobs new_population [N_BLOB];
 			std::vector <Blobs> parent_pool = get_parent_pool(population);
+
 			for(int i = 0; i < N_BLOB; i++) {
 				new_population[i] = crossover(parent_pool);
 				mutate(&new_population[i]);
+			}
+
+			/* assign new population */
+			for(int i = 0; i < N_BLOB; i++) {
+				population[i] = new_population[i];
 			}
 		}
 
@@ -377,7 +390,7 @@ class GeneticAlgorithm{
 		static float get_population_reward_total(Blobs* population) {
 			float total = 0;
 			for(int i = 0; i < N_BLOB; i++) {
-				total += population->gene.get_reward();
+				total += population[i].gene.get_reward();
 			}
 			return total;
 		}
@@ -388,7 +401,7 @@ class GeneticAlgorithm{
 
 			/* Add blobs to parent pool by their reward score */
 			for(int i = 0; i < N_BLOB; i++) {
-				int n_selected = (int) (N_BLOB * population[i].gene.get_reward() / population_reward);
+				int n_selected = (int) (2 * N_BLOB * population[i].gene.get_reward() / population_reward);
 				for(int j = 0; j < n_selected; j++)
 					parent_pool.push_back(population[i]);
 			}
