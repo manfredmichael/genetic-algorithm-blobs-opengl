@@ -148,6 +148,14 @@ class Blobs{
 				is_dead=true;
 			}
 		}
+
+		void finished(){
+			/* glorious method */
+			if (!is_dead){
+				gene.add_finish_reward();
+				is_dead=true;
+			}
+		}
 };
 
 class Obstacle{
