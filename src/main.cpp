@@ -14,7 +14,7 @@
 const int N_BLOB = 100;
 const int N_OBSTACLE = 25;
 const int STEPS = 3000;
-const int SPEED = 4;
+const int SPEED = 20;
 /* Project Configurations */
 
 
@@ -64,6 +64,7 @@ class Gene{
 		float movement_sequence[STEPS][2];    // movement sequence for each step
 
 		Gene(){
+			reset();
 			initialize_movement_sequence();
 		}
 
@@ -75,8 +76,28 @@ class Gene{
 			}
 		}
 
+		/* --------------- */
+		/* 	 	 Rewards     */    
+		/* --------------- */
+
+		void add_step_reward(){
+			reward += 1;
+		}
+		
+		void add_kill_reward(){
+			reward -= 500;
+		}
+
+		void add_finish_reward(){
+			reward += 3000;
+		}
+
 		float* get_movement_step(int step){
 			return movement_sequence[step];
+		}
+
+		void reset(){
+			reward = 0;
 		}
 };
 
@@ -106,6 +127,7 @@ class Blobs{
 			if (!is_dead){
 				x += gene.get_movement_step(step)[0];
 				y += gene.get_movement_step(step)[1];
+				gene.add_step_reward();
 			}
 			step += 1;
 		}
@@ -116,11 +138,15 @@ class Blobs{
 			y = 0;
 			step = 0;
 			is_dead=false;
+			gene.reset();
 		}
 
 		void kill(){
 			/* scary method */
-			is_dead=true;
+			if (!is_dead){
+				gene.add_kill_reward();
+				is_dead=true;
+			}
 		}
 };
 
@@ -313,9 +339,7 @@ void display (void)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	/* TODO: */ 
-	/* * add walls */
-	/* * add collisions */
-	/* * add blob death on collision */
+	/* * add death distance to target */
 
 
 	simulation.simulate();
