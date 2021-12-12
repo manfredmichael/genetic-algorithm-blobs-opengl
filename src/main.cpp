@@ -182,11 +182,11 @@ class Gene{
 		}
 		
 		void add_kill_reward(){
-			reward -= 100;
+			reward -= 50;
 		}
 
 		void add_finish_reward(){
-			reward += 3000;
+			reward += 5000;
 		}
 
 		void add_distance_to_target_reward(Target target, float x, float y){
@@ -197,8 +197,8 @@ class Gene{
 			if (distance > 800) {
 				distance = 800;
 			}
-			float score = (800 - distance)/10;
-			reward += score * score;
+			float score = (1000 - distance)/100;
+			reward += score * score * score;
 		}
 
 		float* get_movement_step(int step){
@@ -207,7 +207,7 @@ class Gene{
 
 		float get_reward(){
 			printf("reward: %f\n", reward);
-			if (reward<10) return 10;
+			if (reward<0.001) return 0.001;
 			return reward;
 		}
 
