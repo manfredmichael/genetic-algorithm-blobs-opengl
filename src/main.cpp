@@ -134,7 +134,6 @@ class Target: public Obstacle{
 			glColor3f(79/255.0, 9/255.0, 29/255.0);
 			Paint::rect(x, y, w, h);
 		}
-
 };
 
 
