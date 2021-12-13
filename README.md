@@ -3,7 +3,7 @@ A bunch of happy blobs who seek for the prized zone. But life was harsh on them 
 
 ![](./assets/genetic-algorithm-opengl.gif)
 
-## Try it your self
+## Try it yourself
 #### Linux
 ```bash
 git clone https://github.com/manfredmichael/genetic-algorithm-blobs-opengl.git
