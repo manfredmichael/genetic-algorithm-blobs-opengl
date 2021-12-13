@@ -421,6 +421,7 @@ class Simulation{
 		Target target;
 		Blobs blobs [N_BLOB];
 		int steps;    // step counter
+		int generation = 1;    // generation counter
 
 		Collision collision = Collision();
 
@@ -466,10 +467,19 @@ class Simulation{
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].add_distance_reward(target);
 			}
+			
+			/* print average reward */ 
+			float average_reward = GeneticAlgorithm::get_population_reward_total(blobs)/N_BLOB;
+			printf("Generation %i:", generation);
+			printf("%f\n", average_reward);
+
 			GeneticAlgorithm::generate_next_population(blobs);
+
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].reset();
 			}
+
+			generation += 1;
 		}
 };
 
@@ -497,10 +507,6 @@ void myInit (void)
 void display (void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-
-	/* TODO: */ 
-	/* * add crossover in genetic algorithm class */
-
 
 	simulation.simulate();
 
