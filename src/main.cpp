@@ -8,13 +8,16 @@
 #include<vector>
 #include<random>
 #include<time.h>
+
 #define pi 3.142857
 
 /* Project Configurations */
-const int N_BLOB = 100;
+const int N_BLOB = 200;
 const int N_OBSTACLE = 25;
-const int STEPS = 3000;
-const int SPEED = 20;
+const int STEPS = 1200;
+const int SPEED = 16;
+
+const float MUTATION_RATE = 0.01;
 /* Project Configurations */
 
 
@@ -58,97 +61,6 @@ class Paint{
 		}
 };
 
-class Gene{
-	public:
-		float reward;
-		float movement_sequence[STEPS][2];    // movement sequence for each step
-
-		Gene(){
-			reset();
-			initialize_movement_sequence();
-		}
-
-		void initialize_movement_sequence(){
-			for(int i = 0; i < STEPS; i++) { 
-				/* x, y coordinate movement */	
-				movement_sequence[i][0] = (rand() % (SPEED+1)) - SPEED/2;
-				movement_sequence[i][1] = (rand() % (SPEED+1)) - SPEED/2;
-			}
-		}
-
-		/* --------------- */
-		/* 	 	 Rewards     */    
-		/* --------------- */
-
-		void add_step_reward(){
-			reward += 1;
-		}
-		
-		void add_kill_reward(){
-			reward -= 500;
-		}
-
-		void add_finish_reward(){
-			reward += 3000;
-		}
-
-		float* get_movement_step(int step){
-			return movement_sequence[step];
-		}
-
-		void reset(){
-			reward = 0;
-		}
-};
-
-class Blobs{
-	public:
-		static constexpr float RADIUS = 8;
-		int step=0;    // step counter 
-
-		float x;
-		float y;
-		bool is_dead=false;
-
-		Gene gene;
-
-		Blobs(){
-			reset();
-		}
-
-		void render(){
-			/* draw filled circle */
-			glColor3f(151.0/255, 191.0/255, 180.0/255);
-			Paint::circle(x, y, RADIUS);
-		}
-
-		void move(){
-			/* change blob position with movement sequence on each step */
-			if (!is_dead){
-				x += gene.get_movement_step(step)[0];
-				y += gene.get_movement_step(step)[1];
-				gene.add_step_reward();
-			}
-			step += 1;
-		}
-
-		void reset(){
-			/* reset blob position and step counter */
-			x = -400;
-			y = 0;
-			step = 0;
-			is_dead=false;
-			gene.reset();
-		}
-
-		void kill(){
-			/* scary method */
-			if (!is_dead){
-				gene.add_kill_reward();
-				is_dead=true;
-			}
-		}
-};
 
 class Obstacle{
 	public:
@@ -156,6 +68,8 @@ class Obstacle{
 		float y;
 		float w;
 		float h;
+
+		Obstacle() {}
 
 		Obstacle(float x_, float y_, float w_, float h_) {
 			x = x_;
@@ -173,9 +87,25 @@ class Obstacle{
 
 class Target: public Obstacle{
 	public:
+		static constexpr int MAX_X = 700;
+		static constexpr int MAX_Y = 300;
+		static constexpr int MIN_X = 100;
+		static constexpr int MIN_Y = -300;
+
+		Target(){
+			w = 50;
+			h = 50;
+			reset();
+		}
+
 		void render(){
-			glColor3f(79/255.0, 9/255.0, 29/255.0);
+			glColor3f(154/255.0, 230/255.0, 110/255.0);
 			Paint::rect(x, y, w, h);
+		}
+
+		void reset(){
+			x = MIN_X + (rand() % (int)(MAX_X - MIN_X));
+			y = MIN_Y + (rand() % (int)(MAX_Y - MIN_Y));
 		}
 };
 
@@ -224,8 +154,133 @@ class ObstacleFactory{
 		}
 };
 
+
+class Gene{ 
+	public:
+		float reward;
+		float movement_sequence[STEPS][2];    // movement sequence for each step
+
+		Gene(){
+			reset();
+			initialize_movement_sequence();
+		}
+
+		void initialize_movement_sequence(){
+			for(int i = 0; i < STEPS; i++) { 
+				/* x, y coordinate movement */	
+				movement_sequence[i][0] = (rand() % (SPEED+1)) - SPEED/2;
+				movement_sequence[i][1] = (rand() % (SPEED+1)) - SPEED/2;
+			}
+		}
+
+		/* --------------- */
+		/* 	 	 Rewards     */    
+		/* --------------- */
+
+		void add_step_reward(){
+			reward -= 0.1;
+		}
+		
+		void add_kill_reward(){
+			reward -= 1000;
+		}
+
+		void add_finish_reward(){
+			reward += 200000;
+		}
+
+		void add_distance_to_target_reward(Target target, float x, float y){
+			/* reward blobs with smaller distance from target */
+			float x_distance = target.x - x;
+			float y_distance = target.y - y;
+			float distance = sqrt(x_distance*x_distance + y_distance*y_distance); 
+			if (distance > 900) {
+				distance = 900;
+			}
+			float score = (1000 - distance)/50;
+			reward += score * score * score;
+		}
+
+		float* get_movement_step(int step){
+			return movement_sequence[step];
+		}
+
+		float get_reward(){
+			/* printf("reward: %f\n", reward); */
+			if (reward<0.001) return 0.001;
+			return reward;
+		}
+
+		void reset(){
+			reward = 0;
+		}
+};
+
+
+class Blobs{
+	public:
+		static constexpr float RADIUS = 8;
+		int step=0;    // step counter 
+		float x;
+		float y;
+		bool is_dead=false;
+
+		Gene gene;
+
+		Blobs(){
+			reset();
+		}
+
+		void render(){
+			/* draw filled circle */
+			glColor3f(151.0/255, 191.0/255, 180.0/255);
+			Paint::circle(x, y, RADIUS);
+		}
+
+		void move(){
+			/* change blob position with movement sequence on each step */
+			if (!is_dead){
+				x += gene.get_movement_step(step)[0];
+				y += gene.get_movement_step(step)[1];
+				gene.add_step_reward();
+			}
+			step += 1;
+		}
+
+		void reset(){
+			/* reset blob position and step counter */
+			x = -400;
+			y = 0;
+			step = 0;
+			is_dead=false;
+			gene.reset();
+		}
+
+		void kill(){
+			/* scary method */
+			if (!is_dead){
+				gene.add_kill_reward();
+				is_dead=true;
+			}
+		}
+
+		void finish(){
+			/* glorious method */
+			if (!is_dead){
+				gene.add_finish_reward();
+				is_dead=true;
+			}
+		}
+
+		void add_distance_reward(Target target){
+			gene.add_distance_to_target_reward(target, x, y);
+		}
+};
+
+
 class Collision{
 	std::vector <Obstacle> obstacles;
+	Target target;
 
 	public:
 		bool static is_colliding(Obstacle obstacle, Blobs blobs){
@@ -248,13 +303,25 @@ class Collision{
 			}
 		}
 
+		void add_target(Target new_target){
+			target = new_target;
+		}
+
 		/* check collision between blob & all obstacles */
 		void collide(Blobs* blobs){
-			if (has_collided(*blobs))
+			if (is_colliding_with_target(*blobs))
+				blobs->finish();
+			if (is_colliding_with_obstacles(*blobs))
 				blobs->kill();
 		}
 
-		bool has_collided(Blobs blobs) {
+		bool is_colliding_with_target(Blobs blobs) {
+			if (Collision::is_colliding(target, blobs))
+				return true;
+			return false;
+		}
+
+		bool is_colliding_with_obstacles(Blobs blobs) {
 			for(int i = 0; i < (int) obstacles.size(); i++) { 
 				if (Collision::is_colliding(obstacles[i], blobs))
 					return true;
@@ -263,25 +330,112 @@ class Collision{
 		}
 };
 
+
+class GeneticAlgorithm{
+	public:
+		static void generate_next_population(Blobs* population) {
+			Blobs new_population [N_BLOB];
+			std::vector <Blobs> parent_pool = get_parent_pool(population);
+
+			for(int i = 0; i < N_BLOB; i++) {
+				new_population[i] = crossover(parent_pool);
+				mutate(&new_population[i]);
+			}
+
+			/* assign new population */
+			for(int i = 0; i < N_BLOB; i++) {
+				population[i] = new_population[i];
+			}
+		}
+
+		static Blobs crossover(std::vector <Blobs> parent_pool) {
+			Blobs a = select_parent(parent_pool);
+			Blobs b = select_parent(parent_pool);
+			return crossover_gene(a, b);
+		}
+
+		static Blobs crossover_gene(Blobs a, Blobs b) {
+			Blobs child = Blobs();
+			for(int i = 0; i < STEPS; i++) {
+					float r = ((double) rand() / (RAND_MAX));
+					if (r < 0.5) {
+						child.gene.movement_sequence[i][0] = a.gene.movement_sequence[i][0];
+						child.gene.movement_sequence[i][1] = a.gene.movement_sequence[i][1];
+					} else {
+						child.gene.movement_sequence[i][0] = b.gene.movement_sequence[i][0];
+						child.gene.movement_sequence[i][1] = b.gene.movement_sequence[i][1];
+					}
+			}
+			return child;
+		}
+
+		static void mutate(Blobs* blobs) {
+			for(int i = 0; i < STEPS; i++) { 
+				if(will_mutate()) {
+				/* mutatex, y coordinate movement */	
+					blobs->gene.movement_sequence[i][0] = (rand() % (SPEED+1)) - SPEED/2;
+					blobs->gene.movement_sequence[i][1] = (rand() % (SPEED+1)) - SPEED/2;
+				}
+			}
+		}
+
+		static bool will_mutate(){
+			float r = ((double) rand() / (RAND_MAX));
+			if (r<MUTATION_RATE)
+				return true;
+			return false;
+		}
+
+		static float get_population_reward_total(Blobs* population) {
+			float total = 0;
+			for(int i = 0; i < N_BLOB; i++) {
+				total += population[i].gene.get_reward();
+			}
+			return total;
+		}
+
+		static std::vector <Blobs> get_parent_pool(Blobs* population) {
+			float population_reward = get_population_reward_total(population);
+			std::vector <Blobs> parent_pool;
+
+			/* Add blobs to parent pool by their reward score */
+			for(int i = 0; i < N_BLOB; i++) {
+				int n_selected = (int) (2 * N_BLOB * population[i].gene.get_reward() / population_reward);
+				for(int j = 0; j < n_selected; j++)
+					parent_pool.push_back(population[i]);
+			}
+
+			return parent_pool;
+		}
+
+		static Blobs select_parent(std::vector <Blobs> parent_pool){
+			int selected_index = rand() % (int) parent_pool.size();
+			return parent_pool[selected_index];
+		}
+};
+
+
 class Simulation{
 	public:
-		Blobs blobs [N_BLOB];
 		ObstacleFactory obstacleFactory;
+		Target target;
+		Blobs blobs [N_BLOB];
 		int steps;    // step counter
 
 		Collision collision = Collision();
 
 		Simulation(){
-			reset();
 			obstacleFactory = ObstacleFactory();
 
 			/* add all obstacles to collision manager */
 			collision.add_obstacles(obstacleFactory.obstacles);
+			collision.add_target(target);
 
 			/* initialize all blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i] = Blobs();
 			}
+			reset();
 		}
 
 		void simulate(){
@@ -293,9 +447,11 @@ class Simulation{
 		}
 
 		void take_next_step(){
-			/* show obstacles */
+			/* show obstacles & target */
 			obstacleFactory.render();
-			/* move and show blobs */
+			target.render();
+
+			/* move and show all blobs */
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].render();
 				blobs[i].move();
@@ -307,6 +463,10 @@ class Simulation{
 		void reset(){
 			/* reset all blobs and step counter */
 			steps = 0;
+			for(int i = 0; i < N_BLOB; i++) { 
+				blobs[i].add_distance_reward(target);
+			}
+			GeneticAlgorithm::generate_next_population(blobs);
 			for(int i = 0; i < N_BLOB; i++) { 
 				blobs[i].reset();
 			}
@@ -339,7 +499,7 @@ void display (void)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	/* TODO: */ 
-	/* * add death distance to target */
+	/* * add crossover in genetic algorithm class */
 
 
 	simulation.simulate();
