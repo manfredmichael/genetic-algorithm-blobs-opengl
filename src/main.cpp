@@ -14,10 +14,10 @@
 /* Project Configurations */
 const int N_BLOB = 200;
 const int N_OBSTACLE = 25;
-const int STEPS = 2000;
-const int SPEED = 10;
+const int STEPS = 1200;
+const int SPEED = 16;
 
-const float MUTATION_RATE = 0.08;
+const float MUTATION_RATE = 0.01;
 /* Project Configurations */
 
 
@@ -178,15 +178,15 @@ class Gene{
 		/* --------------- */
 
 		void add_step_reward(){
-			reward += 0.001;
+			reward -= 0.1;
 		}
 		
 		void add_kill_reward(){
-			reward -= 450;
+			reward -= 1000;
 		}
 
 		void add_finish_reward(){
-			reward += 80000;
+			reward += 200000;
 		}
 
 		void add_distance_to_target_reward(Target target, float x, float y){
