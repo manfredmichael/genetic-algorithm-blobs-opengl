@@ -1,6 +1,3 @@
-// C program to demonstrate
-// drawing a circle using
-// OpenGL
 #include<stdio.h>
 #include<GL/glut.h>
 #include<stdlib.h> 
